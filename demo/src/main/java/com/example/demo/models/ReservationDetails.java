@@ -3,6 +3,7 @@ package com.example.demo.models;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.StringJoiner;
 
 public class ReservationDetails {
     private String reservationId; // New field for database ID
@@ -18,6 +19,7 @@ public class ReservationDetails {
     private String status;    // New field for reservation status (e.g., "Confirmed", "Pending")
     private String roomNumber; // New field for assigned room number
     private String roomType;   // New field for assigned room type
+    private double discount; // New field for the discount
 
     /**
      * Constructor for creating a new reservation with initial dates and guest counts.
@@ -42,6 +44,7 @@ public class ReservationDetails {
         this.status = "booked";    // Default status when a booking is initially made
         this.roomNumber = "N/A";   // Default room number
         this.roomType = "N/A";     // Default room type
+        this.discount = 0.0;
     }
 
     /**
@@ -59,6 +62,7 @@ public class ReservationDetails {
         this.status = "Pending";   // Default status
         this.roomNumber = "N/A";   // Default room number
         this.roomType = "N/A";     // Default room type
+        this.discount = 0.0;
     }
 
     // Getters
@@ -106,33 +110,9 @@ public class ReservationDetails {
         return penthouses;
     }
 
-    /**
-     * Dynamically calculates the estimated total price for the reservation.
-     * Assumed prices:
-     * Single Room: $100 per night
-     * Double Room: $150 per night
-     * Deluxe Room: $250 per night
-     * Penthouse: $350 per night
-     *
-     * @return The estimated total price based on selected rooms and nights.
-     */
     public double getEstimatedPrice() {
-        long nights = getNumberOfNights();
-        if (nights <= 0) {
-            return 0.0;
-        }
-
-        // Room prices per night (ensure these match KioskRoomConfirmationController for consistency)
-        double SINGLE_ROOM_PRICE = 100.00;
-        double DOUBLE_ROOM_PRICE = 150.00;
-        double DELUXE_ROOM_PRICE = 250.00;
-        double PENTHOUSE_PRICE = 350.00;
-
-        double totalRoomCost = (singleRooms * SINGLE_ROOM_PRICE) +
-                (doubleRooms * DOUBLE_ROOM_PRICE) +
-                (deluxeRooms * DELUXE_ROOM_PRICE) +
-                (penthouses * PENTHOUSE_PRICE);
-        return totalRoomCost * nights;
+        // Return the stored estimated price, which is set by the controller.
+        return estimatedPrice;
     }
 
     public String getStatus() {
@@ -145,6 +125,10 @@ public class ReservationDetails {
 
     public String getRoomType() {
         return roomType;
+    }
+
+    public double getDiscount() {
+        return discount;
     }
 
     // Setters
@@ -200,6 +184,10 @@ public class ReservationDetails {
         this.roomType = roomType;
     }
 
+    public void setDiscount(double discount) {
+        this.discount = discount;
+    }
+
     // Helper methods
     public long getNumberOfNights() {
         if (checkInDate != null && checkOutDate != null) {
@@ -253,7 +241,7 @@ public class ReservationDetails {
         summary.append("Check-out Date: ").append(checkOutDate != null ? checkOutDate.format(formatter) : "N/A").append("\n");
         summary.append("Total Guests: ").append(numberOfAdults + numberOfChildren).append(" (").append(numberOfAdults).append(" Adults, ").append(numberOfChildren).append(" Children)\n");
         summary.append("Rooms: ").append(singleRooms).append(" Single, ").append(doubleRooms).append(" Double, ").append(deluxeRooms).append(" Deluxe, ").append(penthouses).append(" Penthouse\n");
-        summary.append("Estimated Total Price: $").append(String.format("%.2f", getEstimatedPrice()));
+        summary.append("Estimated Total Price: $").append(String.format("%.2f", estimatedPrice));
         summary.append("\nStatus: ").append(status); // Display the stored status
         summary.append("\nAssigned Room: ").append(roomNumber).append(" (").append(roomType).append(")");
         return summary.toString();

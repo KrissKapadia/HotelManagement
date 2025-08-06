@@ -1,31 +1,37 @@
 package com.example.demo.controllers;
 
+import com.example.demo.util.Systemlogger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType; // Import ButtonType for confirmation dialogs
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import com.example.demo.MainApplication;
-import com.example.demo.models.DatabaseManager; // Import DatabaseManager
-import com.example.demo.models.DatabaseManager.ReservationDisplay; // Import the inner class
-import com.example.demo.models.Guest; // Import Guest model
-import com.example.demo.models.ReservationDetails; // Import ReservationDetails model
-
+import com.example.demo.models.DatabaseManager;
+import com.example.demo.models.DatabaseManager.ReservationDisplay;
+import com.example.demo.models.Guest;
+import com.example.demo.models.ReservationDetails;
+import com.example.demo.util.Systemlogger; // Import the custom logger
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional; // Import Optional for Alert results
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger; // Import the Java logging class
 
 public class GuestSearchManagementController {
 
+    // Get the custom logger instance
+    private static final Logger logger = Systemlogger.getLogger();
+
     @FXML
-    private TextField searchField; // Renamed from searchPhoneField to match FXML
+    private TextField searchField;
 
     @FXML
     private Button searchButton;
@@ -35,48 +41,48 @@ public class GuestSearchManagementController {
     @FXML
     private TableColumn<ReservationDisplay, String> guestNameColumn;
     @FXML
-    private TableColumn<ReservationDisplay, String> phoneColumn; // Matched FXML fx:id
+    private TableColumn<ReservationDisplay, String> phoneNumberColumn; // New TableColumn for phone number
     @FXML
-    private TableColumn<ReservationDisplay, String> reservationIdColumn; // Matched FXML fx:id
+    private TableColumn<ReservationDisplay, String> reservationIdColumn;
     @FXML
-    private TableColumn<ReservationDisplay, String> checkInDateColumn; // Matched FXML fx:id
+    private TableColumn<ReservationDisplay, String> checkInDateColumn;
     @FXML
-    private TableColumn<ReservationDisplay, String> statusColumn; // Added to match controller's expectation
+    private TableColumn<ReservationDisplay, String> statusColumn;
 
     @FXML
-    private Button backButton; // This fx:id is for the "Back to Dashboard" button
+    private Button backButton;
     @FXML
     private Button viewDetailsButton;
     @FXML
     private Button cancelBookingButton;
     @FXML
-    private Button modifyBookingButton; // Added FXML ID for the "Modify Booking" button
+    private Button modifyBookingButton;
 
     @FXML
     public void initialize() {
         // Set up cell value factories for TableColumns
-        // These property names must match the getter methods in DatabaseManager.ReservationDisplay
         guestNameColumn.setCellValueFactory(new PropertyValueFactory<>("guestFullName"));
-        phoneColumn.setCellValueFactory(new PropertyValueFactory<>("guestPhoneNumber")); // Using new getter
-        reservationIdColumn.setCellValueFactory(new PropertyValueFactory<>("reservationIdValue")); // Using new getter
+        phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber")); // Set value factory for new column
+        reservationIdColumn.setCellValueFactory(new PropertyValueFactory<>("reservationIdValue"));
         checkInDateColumn.setCellValueFactory(new PropertyValueFactory<>("checkInDateFormatted"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
         DatabaseManager.initialize();
-        loadAllReservations(); // Load initial data or placeholder
 
-        // Disable action buttons initially if no item is selected
+        guestReservationsTable.setPlaceholder(new Label("Enter a phone number to search for reservations."));
+
         viewDetailsButton.setDisable(true);
         cancelBookingButton.setDisable(true);
         modifyBookingButton.setDisable(true);
 
-        // Add listener to enable/disable buttons based on table selection
         guestReservationsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             boolean isSelected = newSelection != null;
             viewDetailsButton.setDisable(!isSelected);
             cancelBookingButton.setDisable(!isSelected);
             modifyBookingButton.setDisable(!isSelected);
         });
+
+        logger.info("GuestSearchManagementController initialized.");
     }
 
     /**
@@ -86,60 +92,70 @@ public class GuestSearchManagementController {
      */
     @FXML
     private void handleSearch(ActionEvent event) {
-        String searchText = searchField.getText(); // Using searchField
+        String searchText = searchField.getText().trim();
+        logger.info("Admin searched for guest reservations with phone number: " + searchText);
         List<ReservationDisplay> results = DatabaseManager.searchReservationsByPhoneNumber(searchText);
 
         if (results.isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, "Search Results", "No reservations found for the given phone number.");
+            logger.warning("No reservations found for phone number: " + searchText);
         }
         guestReservationsTable.setItems(FXCollections.observableArrayList(results));
     }
 
     /**
-     * Loads all reservations into the table. This could be used for initial display
-     * or after clearing a search.
-     */
-    private void loadAllReservations() {
-        // This method is a placeholder. If you have a DatabaseManager.getAllReservations() method, use it here.
-        // For now, it sets a placeholder message.
-        guestReservationsTable.setPlaceholder(new Label("Enter a phone number to search for reservations."));
-    }
-
-    /**
      * Handles the action for the "View Details" button.
-     * Retrieves the selected reservation and loads the Guest Details scene (read-only).
+     * Retrieves the selected reservation's full details and loads the read-only Guest Details scene.
      * @param event The action event.
      * @throws IOException If the FXML for the guest details page cannot be loaded.
      */
     @FXML
     private void handleViewDetails(ActionEvent event) throws IOException {
-        ReservationDisplay selectedReservation = guestReservationsTable.getSelectionModel().getSelectedItem();
-        if (selectedReservation != null) {
-            Guest guest = selectedReservation.getGuest();
-            ReservationDetails details = selectedReservation.getDetails();
-            // Assuming loadGuestDetailsScene is for the read-only view
-            MainApplication.loadGuestDetailsScene(guest, details); // This method is in MainApplication
+        ReservationDisplay selectedDisplay = guestReservationsTable.getSelectionModel().getSelectedItem();
+        if (selectedDisplay != null) {
+            String reservationId = selectedDisplay.getReservationIdValue();
+            logger.info("Admin viewing details for reservation ID: " + reservationId);
+            Map<String, Object> reservationData = DatabaseManager.getReservationById(reservationId);
+
+            if (reservationData != null) {
+                Guest guest = (Guest) reservationData.get("guest");
+                ReservationDetails details = (ReservationDetails) reservationData.get("reservationDetails");
+                MainApplication.loadGuestDetailsScene(guest, details);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve full details for reservation ID: " + reservationId);
+                logger.severe("Could not retrieve details for reservation ID: " + reservationId);
+            }
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a reservation to view its details.");
+            logger.warning("Attempted to view details without selecting a reservation.");
         }
     }
 
     /**
      * Handles the action for the "Modify Booking" button.
-     * Retrieves the selected reservation and loads the editable Guest Details scene.
+     * Retrieves the selected reservation's full details and loads the editable Modify Booking scene.
      * @param event The action event.
      * @throws IOException If the FXML for the editable guest details page cannot be loaded.
      */
     @FXML
     private void handleModifyBooking(ActionEvent event) throws IOException {
-        ReservationDisplay selectedReservation = guestReservationsTable.getSelectionModel().getSelectedItem();
-        if (selectedReservation != null) {
-            Guest guest = selectedReservation.getGuest();
-            ReservationDetails details = selectedReservation.getDetails();
-            // This will load the editable GuestDetails.fxml
-            MainApplication.loadAdminGuestDetailsModifyScene(guest, details); // Method in MainApplication
+        ReservationDisplay selectedDisplay = guestReservationsTable.getSelectionModel().getSelectedItem();
+        if (selectedDisplay != null) {
+            String reservationId = selectedDisplay.getReservationIdValue();
+            logger.info("Admin modifying booking for reservation ID: " + reservationId);
+            Map<String, Object> reservationData = DatabaseManager.getReservationById(reservationId);
+
+            if (reservationData != null) {
+                Guest guest = (Guest) reservationData.get("guest");
+                ReservationDetails details = (ReservationDetails) reservationData.get("reservationDetails");
+                MainApplication.loadAdminGuestDetailsModifyScene(guest, details);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve full details for reservation ID: " + reservationId);
+                logger.severe("Could not retrieve details for modification of reservation ID: " + reservationId);
+            }
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a reservation to modify.");
+            logger.warning("Attempted to modify booking without selecting a reservation.");
         }
     }
 
@@ -153,6 +169,7 @@ public class GuestSearchManagementController {
         ReservationDisplay selectedDisplay = guestReservationsTable.getSelectionModel().getSelectedItem();
         if (selectedDisplay != null) {
             String reservationId = selectedDisplay.getReservationIdValue();
+            logger.info("Admin initiated cancellation for reservation ID: " + reservationId);
 
             Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationAlert.setTitle("Confirm Cancellation");
@@ -161,17 +178,23 @@ public class GuestSearchManagementController {
 
             Optional<ButtonType> result = confirmationAlert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                DatabaseManager.initialize(); // Ensure DB is ready
-                boolean deleted = DatabaseManager.deleteReservation(reservationId); // Call deleteReservation
+                logger.info("Admin confirmed cancellation of reservation ID: " + reservationId);
+                DatabaseManager.initialize();
+                boolean deleted = DatabaseManager.deleteReservation(reservationId);
                 if (deleted) {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Reservation ID " + reservationId + " has been successfully cancelled and deleted.");
-                    handleSearch(null); // Refresh the table after deletion
+                    logger.info("Successfully deleted reservation ID: " + reservationId);
+                    handleSearch(null);
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Deletion Failed", "Failed to delete reservation ID " + reservationId + ".");
+                    logger.severe("Failed to delete reservation ID: " + reservationId);
                 }
+            } else {
+                logger.info("Admin cancelled the cancellation process for reservation ID: " + reservationId);
             }
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a reservation to cancel.");
+            logger.warning("Attempted to cancel booking without selecting a reservation.");
         }
     }
 
@@ -183,6 +206,7 @@ public class GuestSearchManagementController {
      */
     @FXML
     private void handleBackToDashboard(ActionEvent event) throws IOException {
+        logger.info("Admin navigated back to the dashboard from guest search management.");
         MainApplication.loadAdminDashboardScene();
     }
 

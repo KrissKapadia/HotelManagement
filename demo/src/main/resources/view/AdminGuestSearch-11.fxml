@@ -21,11 +21,6 @@
 
 <BorderPane prefHeight="631.0" prefWidth="729.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.GuestSearchManagementController">
 
-    <!-- CSS Stylesheet Link -->
-    <stylesheets>
-        <String fx:value="@guest_search_styles.css" />
-    </stylesheets>
-
     <center>
         <VBox alignment="TOP_CENTER" prefHeight="624.0" prefWidth="1024.0" spacing="25.0" BorderPane.alignment="CENTER">
             <!-- Main Title -->
@@ -49,7 +44,8 @@
             <TableView fx:id="guestReservationsTable" prefHeight="317.0" prefWidth="629.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="guestNameColumn" prefWidth="150.0" text="Guest Name" />
-                    <TableColumn fx:id="phoneColumn" prefWidth="100.0" text="Phone #" />
+                    <!-- Corrected fx:id to match the controller -->
+                    <TableColumn fx:id="phoneNumberColumn" prefWidth="100.0" text="Phone #" />
                     <TableColumn fx:id="reservationIdColumn" prefWidth="100.0" text="Reservation ID" />
                     <TableColumn fx:id="checkInDateColumn" prefWidth="120.0" text="Check-in Date" />
                     <TableColumn fx:id="statusColumn" prefWidth="80.0" text="Status" />

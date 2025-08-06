@@ -6,23 +6,24 @@
 <?import javafx.scene.text.Font?>
 
 <BorderPane prefHeight="800.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.AdminReportsController">
-
     <top>
-        <VBox alignment="CENTER" spacing="15" BorderPane.alignment="CENTER">
+        <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
             <padding>
-                <Insets top="20" right="20" bottom="10" left="20" />
+                <Insets bottom="10" left="20" right="20" top="20" />
             </padding>
-
             <Label text="Billing &amp; Reports">
                 <font>
                     <Font name="System Bold" size="28.0" />
                 </font>
             </Label>
-
-            <HBox alignment="CENTER" spacing="10">
-                <Label text="Search by Mobile Number:" />
-                <TextField fx:id="searchField" prefWidth="250" promptText="Enter Mobile Number..." />
-                <Button fx:id="generateReportButton" text="Generate Report" onAction="#handleGenerateReport" />
+            <HBox alignment="CENTER" spacing="10.0">
+                <Label text="Search by Mobile Number:">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="searchField" prefWidth="250.0" promptText="Enter Mobile Number..." />
+                <Button fx:id="generateReportButton" onAction="#handleGenerateReport" text="Generate Report" />
             </HBox>
         </VBox>
     </top>
@@ -30,10 +31,10 @@
     <center>
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
             <content>
-                <VBox fx:id="billView" alignment="TOP_CENTER" spacing="20" style="-fx-background-color: #FFFFFF; -fx-padding: 25;">
-                    <padding>
-                        <Insets top="10" right="50" bottom="20" left="50" />
-                    </padding>
+                <VBox fx:id="billView" alignment="TOP_CENTER" spacing="10.0" style="-fx-border-color: #A9A9A9; -fx-background-color: #FFFFFF; -fx-padding: 25; -fx-border-width: 2;">
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" left="50.0" right="50.0" top="10.0" />
+                    </BorderPane.margin>
 
                     <Label text="Hotel ABC">
                         <font>
@@ -45,62 +46,74 @@
                             <Font size="16.0" />
                         </font>
                     </Label>
-                    <Separator prefWidth="500" />
+                    <Separator prefWidth="200.0" />
 
-                    <GridPane hgap="15" vgap="10" maxWidth="600">
+                    <GridPane hgap="10" maxWidth="654.0" vgap="8">
                         <columnConstraints>
-                            <ColumnConstraints prefWidth="200" halignment="RIGHT" />
-                            <ColumnConstraints prefWidth="400" />
+                            <!-- Align labels to the right -->
+                            <ColumnConstraints halignment="RIGHT" prefWidth="200" />
+                            <!-- Align values to the left -->
+                            <ColumnConstraints halignment="LEFT" prefWidth="300" />
                         </columnConstraints>
+                        <Label text="Guest Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <Label fx:id="guestNameLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                        <Label text="Guest Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                        <Label fx:id="guestNameLabel" text="N/A" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        <Label text="Reservation ID:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Label fx:id="reservationIdLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                        <Label text="Reservation ID:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                        <Label fx:id="reservationIdLabel" text="N/A" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        <Label text="Bill ID:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Label fx:id="billIdLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                        <Label text="Bill ID:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-                        <Label fx:id="billIdLabel" text="N/A" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        <Label text="Check-in Date:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Label fx:id="checkInLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                        <Label text="Check-in Date:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-                        <Label fx:id="checkInLabel" text="N/A" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                        <Label text="Check-out Date:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Label fx:id="checkOutLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                        <Label text="Check-out Date:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-                        <Label fx:id="checkOutLabel" text="N/A" GridPane.rowIndex="4" GridPane.columnIndex="1" />
-
-                        <Label text="Bill Date:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-                        <Label fx:id="billDateLabel" text="N/A" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+                        <Label text="Bill Date:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                        <Label fx:id="billDateLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                     </GridPane>
 
-                    <Separator prefWidth="500" />
+                    <Separator prefWidth="200.0" />
 
                     <Label text="Charges Summary">
                         <font>
                             <Font name="System Bold" size="18.0" />
                         </font>
+                        <padding>
+                            <Insets bottom="5" top="10" />
+                        </padding>
                     </Label>
 
-                    <GridPane hgap="15" vgap="10" alignment="CENTER" maxWidth="400">
-                        <Label text="Room Charges:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                        <Label fx:id="roomChargesLabel" text="[Charges]" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                    <GridPane alignment="CENTER" hgap="10" maxWidth="400.0" prefWidth="290.0" vgap="8">
+                        <columnConstraints>
+                            <!-- Align labels to the right -->
+                            <ColumnConstraints halignment="RIGHT" prefWidth="150" />
+                            <!-- Align values/inputs to the left -->
+                            <ColumnConstraints halignment="LEFT" prefWidth="140" />
+                        </columnConstraints>
+                        <Label text="Room Charges:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                        <Label fx:id="roomChargesLabel" text="[Charges]" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                        <Label text="Taxes:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                        <Label fx:id="taxesLabel" text="[Taxes]" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        <Label text="Taxes:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Label fx:id="taxesLabel" text="[Taxes]" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                        <Label text="Subtotal:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-                        <Label fx:id="subtotalLabel" text="[Sub-Total]" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        <!-- This line had the error. Removed the invalid GridPane="1" attribute. -->
+                        <Label text="Subtotal:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <Label fx:id="subtotalLabel" text="[Sub-Total]" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                        <Label text="Discount (%):" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-                        <HBox spacing="5" alignment="CENTER_LEFT" GridPane.rowIndex="3" GridPane.columnIndex="1">
-                            <TextField fx:id="discountField" prefWidth="80" promptText="if applicable" />
-                            <Label text="(if applicable)" />
-                        </HBox>
+                        <Label text="Discount (%):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                        <Label fx:id="discountPercentageLabel" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                        <Label text="Discount Value:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-                        <Label fx:id="discountLabel" text="-$0.00" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+                        <Label text="Discount Value:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Label fx:id="discountValueLabel" text="-$0.00" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                     </GridPane>
 
-                    <Separator prefWidth="500" />
+                    <Separator prefWidth="200.0">
+                        <padding>
+                            <Insets bottom="10" top="10" />
+                        </padding>
+                    </Separator>
 
                     <HBox alignment="CENTER" spacing="20">
                         <Label text="Total Amount Due:">
@@ -120,13 +133,12 @@
     </center>
 
     <bottom>
-        <HBox alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
-                <Insets top="10" bottom="20" />
+                <Insets bottom="20.0" top="10" />
             </padding>
-            <Button fx:id="printBillButton" text="Print Bill" prefWidth="120" onAction="#handlePrintBill" />
-            <Button fx:id="backButton" text="Back to Dashboard" prefWidth="150" onAction="#handleBack" />
+            <Button fx:id="printBillButton" onAction="#handlePrintBill" prefWidth="120" text="Print Bill" />
+            <Button fx:id="backButton" onAction="#handleBack" prefWidth="150" text="Back to Dashboard" />
         </HBox>
     </bottom>
-
 </BorderPane>

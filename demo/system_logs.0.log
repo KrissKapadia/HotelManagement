@@ -1,0 +1,62 @@
+Aug 06, 2025 3:18:36 PM com.example.demo.controllers.KioskWelcomeController handleViewRules
+INFO: Displaying Rules & Regulations...
+Aug 06, 2025 3:18:44 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:18:46 PM com.example.demo.controllers.KioskWelcomeController handleStart
+INFO: User initiated a new self-checkout booking.
+Aug 06, 2025 3:24:25 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:36:35 PM com.example.demo.controllers.KioskWelcomeController handleViewRules
+INFO: Displaying Rules & Regulations...
+Aug 06, 2025 3:36:37 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:44:59 PM com.example.demo.controllers.KioskWelcomeController handleViewRules
+INFO: Displaying Rules & Regulations...
+Aug 06, 2025 3:45:01 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:45:06 PM com.example.demo.controllers.AdminLoginController handleLogin
+INFO: Admin has successfully logged in.
+Aug 06, 2025 3:45:07 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:45:16 PM com.example.demo.controllers.AdminDashboardController handleGuestSearch
+INFO: Admin clicked on 'Guest Search' button.
+Aug 06, 2025 3:45:25 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:45:27 PM com.example.demo.controllers.AdminDashboardController handleCheckOut
+INFO: Admin clicked on 'Check-Out' button.
+Aug 06, 2025 3:45:29 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:46:04 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:46:14 PM com.example.demo.controllers.AdminLoginController handleLogin
+INFO: Admin has successfully logged in.
+Aug 06, 2025 3:46:15 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:46:17 PM com.example.demo.controllers.AdminDashboardController handleGuestSearch
+INFO: Admin clicked on 'Guest Search' button.
+Aug 06, 2025 3:46:20 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:46:21 PM com.example.demo.controllers.AdminDashboardController handleReports
+INFO: Admin clicked on 'Reports' button.
+Aug 06, 2025 3:46:24 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:46:25 PM com.example.demo.controllers.AdminDashboardController handleGuestSearch
+INFO: Admin clicked on 'Guest Search' button.
+Aug 06, 2025 3:46:26 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:46:27 PM com.example.demo.controllers.AdminDashboardController handleNewReservation
+INFO: Admin clicked on 'New Reservation' button.
+Aug 06, 2025 3:47:51 PM com.example.demo.controllers.KioskWelcomeController handleAdminLogin
+INFO: Navigating to Admin Login page.
+Aug 06, 2025 3:47:55 PM com.example.demo.controllers.AdminLoginController handleLogin
+INFO: Admin has successfully logged in.
+Aug 06, 2025 3:47:56 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:47:59 PM com.example.demo.controllers.AdminDashboardController handleGuestSearch
+INFO: Admin clicked on 'Guest Search' button.
+Aug 06, 2025 3:48:01 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.
+Aug 06, 2025 3:48:03 PM com.example.demo.controllers.AdminDashboardController handleReports
+INFO: Admin clicked on 'Reports' button.
+Aug 06, 2025 3:48:04 PM com.example.demo.controllers.AdminDashboardController initialize
+INFO: AdminDashboardController initialized.

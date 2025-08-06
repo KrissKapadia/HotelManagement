@@ -2,11 +2,13 @@ package com.example.demo.models;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter; // Import DateTimeFormatter
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the connection and operations for the SQLite database.
@@ -15,27 +17,29 @@ import java.util.HashMap;
  */
 public class DatabaseManager {
 
+    private static final Logger logger = Logger.getLogger(DatabaseManager.class.getName());
     private static final String DB_URL = "jdbc:sqlite:reservations.db";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
-     * Initializes the database connection and ensures the reservation table exists.
+     * Initializes the database connection and ensures the reservation and feedback tables exist.
      * Call this method before performing any database operations.
      */
     public static void initialize() {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
+                logger.info("The driver name is " + meta.getDriverName());
                 createReservationTable(conn);
+                createFeedbackTable(conn);
             }
         } catch (SQLException e) {
-            System.err.println("Database initialization error: " + e.getMessage());
+            logger.log(Level.SEVERE, "Database initialization error: " + e.getMessage(), e);
         }
     }
 
     /**
      * Creates the 'reservations' table if it does not already exist.
-     * Updated to match the provided Guest model (no firstName, lastName, gender, age, country).
      * @param conn The database connection.
      * @throws SQLException If a database access error occurs.
      */
@@ -45,7 +49,7 @@ public class DatabaseManager {
                 "full_name TEXT NOT NULL," +
                 "phone_number TEXT NOT NULL," +
                 "email TEXT NOT NULL," +
-                "address TEXT NOT NULL," + // Maps to streetName
+                "address TEXT NOT NULL," +
                 "province TEXT NOT NULL," +
                 "city TEXT NOT NULL," +
                 "postal_code TEXT NOT NULL," +
@@ -58,7 +62,7 @@ public class DatabaseManager {
                 "single_rooms INTEGER NOT NULL," +
                 "double_rooms INTEGER NOT NULL," +
                 "deluxe_rooms INTEGER NOT NULL," +
-                "penthouse_rooms INTEGER NOT NULL," + // Updated column name to match camelCase in model
+                "penthouse_rooms INTEGER NOT NULL," +
                 "total_price REAL NOT NULL," +
                 "status TEXT NOT NULL," +
                 "room_number TEXT," +
@@ -66,7 +70,27 @@ public class DatabaseManager {
                 ");";
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("Reservations table created or already exists.");
+            logger.info("Reservations table created or already exists.");
+        }
+    }
+
+    /**
+     * Creates the 'feedback' table if it does not exist.
+     * @param conn The database connection.
+     * @throws SQLException If a database access error occurs.
+     */
+    private static void createFeedbackTable(Connection conn) throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS feedback (" +
+                "feedback_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "reservation_id INTEGER NOT NULL," +
+                "rating INTEGER NOT NULL," +
+                "comment TEXT," +
+                "submission_date TEXT NOT NULL," +
+                "FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id)" +
+                ");";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            logger.info("Feedback table created or already exists.");
         }
     }
 
@@ -74,9 +98,9 @@ public class DatabaseManager {
      * Inserts a new reservation and guest record into the database.
      * Returns the generated reservation ID.
      *
-     * @param guest               The Guest object to save.
-     * @param details             The ReservationDetails object to save.
-     * @param finalEstimatedTotal
+     * @param guest The Guest object to save.
+     * @param details The ReservationDetails object to save.
+     * @param finalEstimatedTotal The final estimated total price.
      * @return The generated reservation ID as a String, or null if insertion fails.
      */
     public static String insertReservation(Guest guest, ReservationDetails details, double finalEstimatedTotal) {
@@ -85,12 +109,11 @@ public class DatabaseManager {
                 "id_proof_type, id_proof_number, check_in_date, check_out_date, " +
                 "adults, children, single_rooms, double_rooms, deluxe_rooms, penthouse_rooms, " +
                 "total_price, status, room_number, room_type) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // 21 parameters
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Guest parameters (indices adjusted)
             pstmt.setString(1, guest.getFullName());
             pstmt.setString(2, guest.getPhoneNumber());
             pstmt.setString(3, guest.getEmail());
@@ -100,17 +123,15 @@ public class DatabaseManager {
             pstmt.setString(7, guest.getPostalCode());
             pstmt.setString(8, guest.getIdProofType());
             pstmt.setString(9, guest.getIdProofNumber());
-
-            // ReservationDetails parameters (indices adjusted)
-            pstmt.setString(10, details.getCheckInDate().toString());
-            pstmt.setString(11, details.getCheckOutDate().toString());
+            pstmt.setString(10, details.getCheckInDate().format(DATE_FORMATTER));
+            pstmt.setString(11, details.getCheckOutDate().format(DATE_FORMATTER));
             pstmt.setInt(12, details.getNumberOfAdults());
             pstmt.setInt(13, details.getNumberOfChildren());
             pstmt.setInt(14, details.getSingleRooms());
             pstmt.setInt(15, details.getDoubleRooms());
             pstmt.setInt(16, details.getDeluxeRooms());
             pstmt.setInt(17, details.getPenthouses());
-            pstmt.setDouble(18, details.getEstimatedPrice()); // Using getEstimatedPrice from details
+            pstmt.setDouble(18, finalEstimatedTotal);
             pstmt.setString(19, details.getStatus());
             pstmt.setString(20, details.getRoomNumber());
             pstmt.setString(21, details.getRoomType());
@@ -121,14 +142,13 @@ public class DatabaseManager {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         String generatedId = String.valueOf(rs.getInt(1));
-                        System.out.println("Reservation successfully saved with ID: " + generatedId);
+                        logger.info("Reservation successfully saved with ID: " + generatedId);
                         return generatedId;
                     }
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error saving reservation: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error saving reservation: " + e.getMessage(), e);
         }
         return null;
     }
@@ -143,30 +163,27 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Assuming reservation_id is an INTEGER in your DB, convert if necessary
-            // If reservation_id is AUTOINCREMENT, it's likely an INTEGER
             pstmt.setInt(1, Integer.parseInt(reservationId));
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                System.out.println("Reservation with ID " + reservationId + " successfully deleted from database.");
+                logger.info("Reservation with ID " + reservationId + " successfully deleted from database.");
                 return true;
             } else {
-                System.out.println("No reservation found with ID " + reservationId + " for deletion.");
+                logger.warning("No reservation found with ID " + reservationId + " for deletion.");
                 return false;
             }
         } catch (SQLException e) {
-            System.err.println("Error deleting reservation: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error deleting reservation: " + e.getMessage(), e);
             return false;
         } catch (NumberFormatException e) {
-            System.err.println("Invalid reservation ID format: " + reservationId + ". Must be a number.");
+            logger.log(Level.SEVERE, "Invalid reservation ID format: " + reservationId + ". Must be a number.", e);
             return false;
         }
     }
 
     /**
      * Searches for reservations by guest phone number.
-     * Updated to match the provided Guest model.
      * @param phoneNumber The phone number to search for.
      * @return A list of ReservationDisplay objects matching the phone number.
      */
@@ -186,7 +203,6 @@ public class DatabaseManager {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                // Construct Guest object using the available constructor
                 Guest guest = new Guest(
                         rs.getString("full_name"),
                         rs.getString("phone_number"),
@@ -199,11 +215,10 @@ public class DatabaseManager {
                         rs.getString("id_proof_number")
                 );
 
-                // Construct ReservationDetails object using all fields
                 ReservationDetails details = new ReservationDetails();
                 details.setReservationId(String.valueOf(rs.getInt("reservation_id")));
-                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date")));
-                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date")));
+                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date"), DATE_FORMATTER));
+                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date"), DATE_FORMATTER));
                 details.setNumberOfAdults(rs.getInt("adults"));
                 details.setNumberOfChildren(rs.getInt("children"));
                 details.setSingleRooms(rs.getInt("single_rooms"));
@@ -215,19 +230,16 @@ public class DatabaseManager {
                 details.setRoomNumber(rs.getString("room_number"));
                 details.setRoomType(rs.getString("room_type"));
 
-                // Create ReservationDisplay object for the TableView
                 results.add(new ReservationDisplay(guest, details));
             }
         } catch (SQLException e) {
-            System.err.println("Error searching reservations: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error searching reservations: " + e.getMessage(), e);
         }
         return results;
     }
 
     /**
      * Retrieves a full Guest and ReservationDetails object by reservation ID.
-     * Updated to match the provided Guest model.
      * @param reservationId The ID of the reservation to retrieve.
      * @return A Map containing the Guest and ReservationDetails, or null if not found.
      */
@@ -246,7 +258,6 @@ public class DatabaseManager {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                // Construct Guest object using the available constructor
                 Guest guest = new Guest(
                         rs.getString("full_name"),
                         rs.getString("phone_number"),
@@ -259,11 +270,10 @@ public class DatabaseManager {
                         rs.getString("id_proof_number")
                 );
 
-                // Construct ReservationDetails object using all fields
                 ReservationDetails details = new ReservationDetails();
                 details.setReservationId(String.valueOf(rs.getInt("reservation_id")));
-                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date")));
-                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date")));
+                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date"), DATE_FORMATTER));
+                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date"), DATE_FORMATTER));
                 details.setNumberOfAdults(rs.getInt("adults"));
                 details.setNumberOfChildren(rs.getInt("children"));
                 details.setSingleRooms(rs.getInt("single_rooms"));
@@ -281,15 +291,15 @@ public class DatabaseManager {
                 return result;
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving reservation by ID: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error retrieving reservation by ID: " + e.getMessage(), e);
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "Invalid reservation ID format: " + e.getMessage(), e);
         }
         return null;
     }
 
     /**
      * Updates an existing reservation record in the database.
-     * Updated to match the provided Guest model.
      * @param guest The updated Guest object.
      * @param details The updated ReservationDetails object.
      * @return true if the update was successful, false otherwise.
@@ -305,7 +315,6 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Guest parameters (indices adjusted)
             pstmt.setString(1, guest.getFullName());
             pstmt.setString(2, guest.getPhoneNumber());
             pstmt.setString(3, guest.getEmail());
@@ -316,29 +325,29 @@ public class DatabaseManager {
             pstmt.setString(8, guest.getIdProofType());
             pstmt.setString(9, guest.getIdProofNumber());
 
-            // ReservationDetails parameters (indices adjusted)
-            pstmt.setString(10, details.getCheckInDate().toString());
-            pstmt.setString(11, details.getCheckOutDate().toString());
+            pstmt.setString(10, details.getCheckInDate().format(DATE_FORMATTER));
+            pstmt.setString(11, details.getCheckOutDate().format(DATE_FORMATTER));
             pstmt.setInt(12, details.getNumberOfAdults());
             pstmt.setInt(13, details.getNumberOfChildren());
             pstmt.setInt(14, details.getSingleRooms());
             pstmt.setInt(15, details.getDoubleRooms());
             pstmt.setInt(16, details.getDeluxeRooms());
             pstmt.setInt(17, details.getPenthouses());
-            pstmt.setDouble(18, details.getEstimatedPrice()); // Recalculated price
+            pstmt.setDouble(18, details.getEstimatedPrice());
             pstmt.setString(19, details.getStatus());
             pstmt.setString(20, details.getRoomNumber());
             pstmt.setString(21, details.getRoomType());
-            pstmt.setInt(22, Integer.parseInt(details.getReservationId())); // WHERE clause
+            pstmt.setInt(22, Integer.parseInt(details.getReservationId()));
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
-                System.out.println("Reservation ID " + details.getReservationId() + " successfully updated.");
+                logger.info("Reservation ID " + details.getReservationId() + " successfully updated.");
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("Error updating reservation: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error updating reservation: " + e.getMessage(), e);
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "Invalid reservation ID format during update: " + e.getMessage(), e);
         }
         return false;
     }
@@ -361,8 +370,8 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, today.toString());
-            pstmt.setString(2, tomorrow.toString());
+            pstmt.setString(1, today.format(DATE_FORMATTER));
+            pstmt.setString(2, tomorrow.format(DATE_FORMATTER));
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -381,8 +390,8 @@ public class DatabaseManager {
 
                 ReservationDetails details = new ReservationDetails();
                 details.setReservationId(String.valueOf(rs.getInt("reservation_id")));
-                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date")));
-                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date")));
+                details.setCheckInDate(LocalDate.parse(rs.getString("check_in_date"), DATE_FORMATTER));
+                details.setCheckOutDate(LocalDate.parse(rs.getString("check_out_date"), DATE_FORMATTER));
                 details.setNumberOfAdults(rs.getInt("adults"));
                 details.setNumberOfChildren(rs.getInt("children"));
                 details.setSingleRooms(rs.getInt("single_rooms"));
@@ -397,10 +406,94 @@ public class DatabaseManager {
                 results.add(new ReservationDisplay(guest, details));
             }
         } catch (SQLException e) {
-            System.err.println("Error retrieving upcoming reservations: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error retrieving upcoming reservations: " + e.getMessage(), e);
         }
         return results;
+    }
+
+    /**
+     * Updates a reservation's status to 'checked-out' and saves the final price.
+     * @param reservationId The ID of the reservation to update.
+     * @param finalPrice The final price to be stored.
+     * @return true if the update was successful, false otherwise.
+     */
+    public static boolean saveCheckoutDetails(String reservationId, double finalPrice) {
+        String sql = "UPDATE reservations SET status = ?, total_price = ? WHERE reservation_id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "checked-out");
+            pstmt.setDouble(2, finalPrice);
+            pstmt.setInt(3, Integer.parseInt(reservationId));
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error saving checkout details: " + e.getMessage(), e);
+            return false;
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "Invalid reservation ID format for checkout: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Finds the most recent reservation ID for a given phone number.
+     * @param phoneNumber The phone number to search for.
+     * @return The reservation ID as a String, or null if not found.
+     */
+    private static String getReservationIdByPhoneNumber(String phoneNumber) {
+        String sql = "SELECT reservation_id FROM reservations WHERE phone_number = ? ORDER BY reservation_id DESC LIMIT 1";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, phoneNumber);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return String.valueOf(rs.getInt("reservation_id"));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error finding reservation ID by phone number: " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * Inserts a new feedback record into the database, using the phone number to
+     * find the associated reservation ID.
+     *
+     * @param phoneNumber The guest's phone number to link the feedback to a reservation.
+     * @param rating The star rating (e.g., 1-5).
+     * @param comment The guest's comments.
+     * @return true if the feedback was inserted successfully, false otherwise.
+     */
+    public static boolean insertFeedback(String phoneNumber, int rating, String comment) {
+        String reservationId = getReservationIdByPhoneNumber(phoneNumber);
+        if (reservationId == null) {
+            logger.warning("Could not find a reservation for phone number: " + phoneNumber);
+            return false;
+        }
+
+        String sql = "INSERT INTO feedback(reservation_id, rating, comment, submission_date) VALUES(?, ?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, Integer.parseInt(reservationId));
+            pstmt.setInt(2, rating);
+            pstmt.setString(3, comment);
+            pstmt.setString(4, LocalDate.now().format(DATE_FORMATTER));
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                logger.info("Feedback for reservation " + reservationId + " successfully inserted.");
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error inserting feedback: " + e.getMessage(), e);
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "Invalid reservation ID format in feedback: " + e.getMessage(), e);
+        }
+        return false;
     }
 
     /**
@@ -446,7 +539,6 @@ public class DatabaseManager {
                 if (details.getPenthouses() > 0) sb.append(details.getPenthouses()).append("PH ");
                 String roomSummary = sb.toString().trim();
 
-                // Add room number if available
                 if (details.getRoomNumber() != null && !details.getRoomNumber().isEmpty()) {
                     if (!roomSummary.isEmpty()) {
                         roomSummary += " (Rm: " + details.getRoomNumber() + ")";

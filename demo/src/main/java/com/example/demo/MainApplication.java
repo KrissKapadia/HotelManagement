@@ -141,6 +141,14 @@ public class MainApplication extends Application {
         mainStage.show();
     }
 
+    public static void loadFeedbackScene() throws IOException {
+        // This will load the new feedback FXML file
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource(FXML_PATH_PREFIX + "KioskGuestFeedbackPage-14.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        mainStage.setScene(scene);
+        mainStage.show();
+    }
+
     public static void main(String[] args) {
         launch();
     }

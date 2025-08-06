@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.util.Systemlogger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,20 +9,24 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory; // Import PropertyValueFactory
+import javafx.scene.control.cell.PropertyValueFactory;
 import com.example.demo.MainApplication;
 import com.example.demo.models.ReservationDetails;
-import com.example.demo.models.DatabaseManager; // Import DatabaseManager
-import com.example.demo.models.DatabaseManager.ReservationDisplay; // Import ReservationDisplay
-
+import com.example.demo.models.DatabaseManager;
+import com.example.demo.models.DatabaseManager.ReservationDisplay;
+import com.example.demo.util.Systemlogger; // Import your custom logger utility
 import java.io.IOException;
-import java.time.LocalDate; // Import LocalDate
+import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Logger; // Import the Java logging class
 
 public class AdminDashboardController {
 
+    // Get the custom logger instance
+    private static final Logger logger = Systemlogger.getLogger();
+
     @FXML
-    private TableView<ReservationDisplay> reservationsTable; // Specify the model type
+    private TableView<ReservationDisplay> reservationsTable;
     @FXML
     private TableColumn<ReservationDisplay, String> guestNameColumn;
     @FXML
@@ -33,24 +38,20 @@ public class AdminDashboardController {
 
     @FXML
     public void initialize() {
-        // Set up cell value factories for TableColumns
-        // These property names must match the getter methods in DatabaseManager.ReservationDisplay
         guestNameColumn.setCellValueFactory(new PropertyValueFactory<>("guestFullName"));
-        roomColumn.setCellValueFactory(new PropertyValueFactory<>("roomDetailsSummary")); // Matches getRoomDetailsSummary()
-        checkInTimeColumn.setCellValueFactory(new PropertyValueFactory<>("checkInDateFormatted")); // Matches getCheckInDateFormatted()
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status")); // Matches getStatus()
+        roomColumn.setCellValueFactory(new PropertyValueFactory<>("roomDetailsSummary"));
+        checkInTimeColumn.setCellValueFactory(new PropertyValueFactory<>("checkInDateFormatted"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Load upcoming reservations when the controller initializes
         loadUpcomingReservations();
 
-        System.out.println("AdminDashboardController initialized.");
+        logger.info("AdminDashboardController initialized.");
     }
 
     /**
      * Loads reservations for today and tomorrow into the reservationsTable.
      */
     private void loadUpcomingReservations() {
-        // Initialize the database connection and table if they don't exist
         DatabaseManager.initialize();
 
         List<ReservationDisplay> upcomingReservations = DatabaseManager.getReservationsForNext24Hours();
@@ -70,7 +71,7 @@ public class AdminDashboardController {
      */
     @FXML
     private void handleNewReservation(ActionEvent event) throws IOException {
-        // Create a new ReservationDetails object for the new booking
+        logger.info("Admin clicked on 'New Reservation' button."); // Log the button click
         ReservationDetails newReservation = new ReservationDetails();
         MainApplication.loadDateSelectionScene(newReservation);
     }
@@ -83,7 +84,8 @@ public class AdminDashboardController {
      */
     @FXML
     private void handleGuestSearch(ActionEvent event) throws IOException {
-        MainApplication.loadGuestSearchManagementScene(); // Navigate to the Guest Search & Management scene
+        logger.info("Admin clicked on 'Guest Search' button."); // Log the button click
+        MainApplication.loadGuestSearchManagementScene();
     }
 
     /**
@@ -94,7 +96,8 @@ public class AdminDashboardController {
      */
     @FXML
     private void handleCheckOut(ActionEvent event) throws IOException {
-        MainApplication.loadAdminCheckOutScene(); // Navigate to the Admin Check-Out scene
+        logger.info("Admin clicked on 'Check-Out' button."); // Log the button click
+        MainApplication.loadAdminCheckOutScene();
     }
 
     /**
@@ -105,7 +108,8 @@ public class AdminDashboardController {
      */
     @FXML
     private void handleReports(ActionEvent event) throws IOException {
-        MainApplication.loadAdminReportsScene(); // Navigate to the Admin Reports scene
+        logger.info("Admin clicked on 'Reports' button."); // Log the button click
+        MainApplication.loadAdminReportsScene();
     }
 
     /**
@@ -129,6 +133,7 @@ public class AdminDashboardController {
      */
     @FXML
     private void handleLogout(ActionEvent event) throws IOException {
+        logger.info("Admin logged out from dashboard."); // Log the logout action
         MainApplication.loadNewScene("KioskWelcomePage-01.fxml");
     }
 }

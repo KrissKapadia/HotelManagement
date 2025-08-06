@@ -147,8 +147,8 @@ public class KioskRoomSelectionController {
         }
 
         // 2. Validate that the selected rooms can accommodate all guests
-        int totalAdults = reservationDetails.getAdults();
-        int totalChildren = reservationDetails.getChildren();
+        int totalAdults = reservationDetails.getNumberOfAdults();
+        int totalChildren = reservationDetails.getNumberOfChildren(); // FIX: Changed getChildren() to getNumberOfChildren()
 
         int totalAdultCapacity = (singleRoomSpinner.getValue() * SINGLE_ADULT_CAPACITY) +
                 (doubleRoomSpinner.getValue() * DOUBLE_ADULT_CAPACITY) +

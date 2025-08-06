@@ -1,16 +1,21 @@
-package com.example.demo.controllers; // Corrected package name as per your specification
+package com.example.demo.controllers;
 
-import com.example.demo.MainApplication; // Assuming MainApplication is in com.example.demo
+import com.example.demo.MainApplication;
+import com.example.demo.util.Systemlogger; // Import your custom logger utility
+import java.io.IOException;
+import java.util.logging.Logger; // Import the Java logging class
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert; // For showing alerts
-import javafx.scene.control.Button; // Explicit import for Button
-import java.io.IOException;
 
 public class AdminLoginController {
+
+    // Get the custom logger instance
+    private static final Logger logger = Systemlogger.getLogger();
 
     @FXML
     private TextField usernameField;
@@ -22,21 +27,19 @@ public class AdminLoginController {
     private Label errorMessageLabel;
 
     @FXML
-    private Button loginButton; // Changed to Button
+    private Button loginButton;
 
     @FXML
-    private Button clearButton; // New FXML for the Clear button
+    private Button clearButton;
 
     @FXML
-    private Button backToWelcomeButton; // Changed to Button
+    private Button backToWelcomeButton;
 
-    // Hardcoded credentials for demonstration purposes
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "password";
 
     @FXML
     public void initialize() {
-        // Clear any previous error messages on initialization
         errorMessageLabel.setText("");
     }
 
@@ -51,17 +54,22 @@ public class AdminLoginController {
         String password = passwordField.getText();
 
         if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
-            errorMessageLabel.setText(""); // Clear any previous error
+            // Log a successful login
+            logger.info("Admin has successfully logged in.");
+
+            errorMessageLabel.setText("");
             showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Administrator!");
             try {
-                // Navigate to the Admin Dashboard
-                // This line calls the static method in MainApplication to load the dashboard scene.
                 MainApplication.loadAdminDashboardScene();
             } catch (IOException e) {
                 errorMessageLabel.setText("Error loading dashboard: " + e.getMessage());
+                logger.severe("Failed to load admin dashboard: " + e.getMessage()); // Log the exception
                 e.printStackTrace();
             }
         } else {
+            // Log a failed login attempt
+            logger.warning("Admin login failed. Invalid username or password.");
+
             errorMessageLabel.setText("Invalid username or password. Please try again.");
         }
     }
@@ -75,7 +83,8 @@ public class AdminLoginController {
     private void handleClear(ActionEvent event) {
         usernameField.clear();
         passwordField.clear();
-        errorMessageLabel.setText(""); // Clear any error messages
+        errorMessageLabel.setText("");
+        logger.info("Admin login fields cleared."); // Log the clear action
     }
 
     /**
@@ -86,6 +95,7 @@ public class AdminLoginController {
      */
     @FXML
     private void handleBackToWelcome(ActionEvent event) throws IOException {
+        logger.info("Admin login page: navigating back to welcome page."); // Log the back action
         MainApplication.loadNewScene("KioskWelcomePage-01.fxml");
     }
 

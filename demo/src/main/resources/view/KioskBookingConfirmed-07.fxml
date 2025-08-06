@@ -8,9 +8,6 @@
 
 <BorderPane prefHeight="608.0" prefWidth="986.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.BookingSuccessfulController">
 
-    <stylesheets>
-        <String fx:value="@booking_successful_styles.css" />
-    </stylesheets>
 
     <center>
         <VBox alignment="TOP_CENTER" prefHeight="448.0" prefWidth="752.0" spacing="20.0" styleClass="content-card" BorderPane.alignment="CENTER">

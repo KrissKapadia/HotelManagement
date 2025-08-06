@@ -3,15 +3,20 @@ package com.example.demo.controllers;
 import com.example.demo.MainApplication;
 import com.example.demo.models.Guest;
 import com.example.demo.models.ReservationDetails;
+import com.example.demo.util.Systemlogger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter; // For formatting dates
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 public class GuestDetailsController {
+
+    // Get the custom logger instance
+    private static final Logger logger = Systemlogger.getLogger();
 
     // Guest Information Labels (now strictly matching the Guest model)
     @FXML private Label fullNameLabel; // Displays the full name directly
@@ -41,7 +46,7 @@ public class GuestDetailsController {
 
     @FXML
     public void initialize() {
-        // Initialization logic is minimal as labels are display-only.
+        logger.info("GuestDetailsController initialized.");
     }
 
     /**
@@ -54,6 +59,9 @@ public class GuestDetailsController {
         this.guest = guest;
         this.reservationDetails = reservationDetails;
         populateLabels();
+        if (guest != null && reservationDetails != null) {
+            logger.info("Populating details for reservation ID: " + reservationDetails.getReservationId() + " for guest: " + guest.getFullName());
+        }
     }
 
     /**
@@ -106,6 +114,7 @@ public class GuestDetailsController {
      */
     @FXML
     private void handleBack(ActionEvent event) throws IOException {
+        logger.info("Navigating back to Guest Search & Management scene.");
         MainApplication.loadGuestSearchManagementScene();
     }
 

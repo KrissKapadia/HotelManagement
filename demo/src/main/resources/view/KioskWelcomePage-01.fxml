@@ -90,7 +90,7 @@
                                 <DropShadow color="#00000033" height="5.0" radius="2.0" width="5.0" />
                             </effect>
                         </Button>
-                        <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="157.0" style="-fx-background-color: #3498DB; -fx-text-fill: white;" text="Leave a Feedback" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Button fx:id="feedbackButton" mnemonicParsing="false" onAction="#handleLeaveFeedback" prefHeight="29.0" prefWidth="157.0" style="-fx-background-color: #3498DB; -fx-text-fill: white;" text="Leave a Feedback" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                             <font>
                                 <Font size="14.0" />
                             </font>
