@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="780.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.AdminModifyBookingController">
+    <children>
+        <ScrollPane fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox alignment="TOP_CENTER" prefWidth="550.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #B0C4DE; -fx-border-radius: 10; -fx-padding: 20;">
+                    <children>
+                        <Label text="Modify Booking Details">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+
+                        <!-- Guest Info -->
+                        <Label text="Guest Information" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                        <GridPane hgap="10" vgap="8">
+                            <padding><Insets top="5" bottom="10" left="20" right="20"/></padding>
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="250"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints/><RowConstraints/><RowConstraints/><RowConstraints/><RowConstraints/>
+                                <RowConstraints/><RowConstraints/><RowConstraints/><RowConstraints/>
+                            </rowConstraints>
+
+                            <Label text="Full Name:" GridPane.rowIndex="0" />
+                            <TextField fx:id="fullNameField" promptText="Full Name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label text="Phone Number:" GridPane.rowIndex="1" />
+                            <TextField fx:id="phoneNumberField" promptText="Phone Number" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label text="Email:" GridPane.rowIndex="2" />
+                            <TextField fx:id="emailField" promptText="Email" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label text="Address:" GridPane.rowIndex="3" />
+                            <TextArea fx:id="addressField" promptText="Address" prefRowCount="2" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                            <Label text="City:" GridPane.rowIndex="4" />
+                            <TextField fx:id="cityField" promptText="City" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                            <Label text="Province:" GridPane.rowIndex="5" />
+                            <ComboBox fx:id="provinceComboBox" promptText="Select Province" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                            <Label text="Postal Code:" GridPane.rowIndex="6" />
+                            <TextField fx:id="postalCodeField" promptText="Postal Code" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                            <Label text="ID Proof Type:" GridPane.rowIndex="7" />
+                            <ComboBox fx:id="idProofTypeComboBox" promptText="Select ID Type" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                            <Label text="ID Proof Number:" GridPane.rowIndex="8" />
+                            <TextField fx:id="idProofNumberField" promptText="ID Number" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        </GridPane>
+
+                        <Separator />
+
+                        <!-- Reservation Info -->
+                        <Label text="Reservation Information" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                        <GridPane hgap="10" vgap="8">
+                            <padding><Insets top="5" bottom="10" left="20" right="20"/></padding>
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="250"/>
+                            </columnConstraints>
+
+                            <Label text="Reservation ID:" GridPane.rowIndex="0" />
+                            <Label fx:id="reservationIdLabel" text="[Reservation ID]" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label text="Check-in Date:" GridPane.rowIndex="1" />
+                            <DatePicker fx:id="checkInDateField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label text="Check-out Date:" GridPane.rowIndex="2" />
+                            <DatePicker fx:id="checkOutDateField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label text="Adults:" GridPane.rowIndex="3" />
+                            <TextField fx:id="numberOfAdultsField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                            <Label text="Children:" GridPane.rowIndex="4" />
+                            <TextField fx:id="numberOfChildrenField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                            <Label text="Room Type:" GridPane.rowIndex="5" />
+                            <ComboBox fx:id="roomTypeComboBox" promptText="Select Room Type" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                            <Label text="Room Number:" GridPane.rowIndex="6" />
+                            <TextField fx:id="roomNumberField" promptText="Room Number" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                            <Label text="Status:" GridPane.rowIndex="7" />
+                            <ComboBox fx:id="statusComboBox" promptText="Select Status" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        </GridPane>
+
+                        <Separator />
+
+                        <!-- Room Counts -->
+                        <Label text="Room Counts" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                        <GridPane hgap="10" vgap="8">
+                            <padding><Insets top="5" bottom="10" left="20" right="20"/></padding>
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="250"/>
+                            </columnConstraints>
+
+                            <Label text="Single Rooms:" GridPane.rowIndex="0" />
+                            <TextField fx:id="singleRoomsField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label text="Double Rooms:" GridPane.rowIndex="1" />
+                            <TextField fx:id="doubleRoomsField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label text="Deluxe Rooms:" GridPane.rowIndex="2" />
+                            <TextField fx:id="deluxeRoomsField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label text="Penthouses:" GridPane.rowIndex="3" />
+                            <TextField fx:id="penthousesField" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        </GridPane>
+
+                        <Separator />
+
+                        <!-- Billing -->
+                        <Label text="Billing" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                        <GridPane hgap="10" vgap="8">
+                            <padding><Insets top="5" bottom="10" left="20" right="20"/></padding>
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="120"/>
+                                <ColumnConstraints prefWidth="250"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints/>
+                            </rowConstraints>
+
+                            <Label text="Estimated Total:" GridPane.rowIndex="0" />
+                            <Label fx:id="estimatedTotalLabel" text="[Calculated Total]" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        </GridPane>
+
+                        <!-- Action Buttons -->
+                        <HBox spacing="20.0" alignment="CENTER">
+                            <Button fx:id="saveChangesButton" text="Save Changes" onAction="#handleSaveChanges" prefWidth="150.0"/>
+                            <Button fx:id="backButton" text="Back to Search" onAction="#handleBack" prefWidth="150.0"/>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="30.0" left="0.0" right="0.0" top="0.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>

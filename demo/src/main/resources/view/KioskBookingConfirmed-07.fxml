@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="608.0" prefWidth="986.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.BookingSuccessfulController">
+
+    <stylesheets>
+        <String fx:value="@booking_successful_styles.css" />
+    </stylesheets>
+
+    <center>
+        <VBox alignment="TOP_CENTER" prefHeight="448.0" prefWidth="752.0" spacing="20.0" styleClass="content-card" BorderPane.alignment="CENTER">
+            <children>
+                <Label styleClass="success-title" text="Booking Successful!">
+                    <VBox.margin>
+                        <Insets bottom="15.0" top="30.0" />
+                    </VBox.margin>
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+
+                <Label styleClass="confirmation-message" text="Your reservation is confirmed.">
+                    <VBox.margin>
+                        <Insets bottom="10.0" />
+                    </VBox.margin>
+                </Label>
+
+                <Label text="Reservation ID:" styleClass="reservation-id-label">
+                    <graphic>
+                        <Label fx:id="reservationIdValueLabel" styleClass="reservation-id-value" />
+                    </graphic>
+                    <VBox.margin>
+                        <Insets bottom="15.0" />
+                    </VBox.margin>
+                    <font>
+                        <Font name="System Bold" size="13.0" />
+                    </font>
+                </Label>
+
+
+                <Label styleClass="welcome-message" text="Welcome to Hotel ABC! We look forward to your stay.">
+                    <VBox.margin>
+                        <Insets bottom="25.0" />
+                    </VBox.margin>
+                </Label>
+
+                <Label prefHeight="18.0" prefWidth="487.0" styleClass="reminder-label" text="Reminder: After your stay, you can use this kiosk to leave feedback about your experience.">
+                    <VBox.margin>
+                        <Insets bottom="30.0" />
+                    </VBox.margin>
+                </Label>
+
+                <Button mnemonicParsing="false" onAction="#handleFinish" styleClass="finish-button" text="Finish">
+                    <VBox.margin>
+                        <Insets bottom="30.0" />
+                    </VBox.margin>
+                </Button>
+            </children>
+            <padding>
+                <Insets bottom="30.0" left="50.0" right="50.0" top="30.0" />
+            </padding>
+            <BorderPane.margin>
+                <Insets bottom="80.0" left="200.0" right="200.0" top="80.0" />
+            </BorderPane.margin>
+        </VBox>
+    </center>
+</BorderPane>
