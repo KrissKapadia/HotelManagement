@@ -1,9 +1,11 @@
 package com.example.demo.controllers;
 
 import com.example.demo.MainApplication;
-import com.example.demo.util.Systemlogger; // Import your custom logger utility
+import com.example.demo.util.Systemlogger;
 import java.io.IOException;
-import java.util.logging.Logger; // Import the Java logging class
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -35,8 +37,15 @@ public class AdminLoginController {
     @FXML
     private Button backToWelcomeButton;
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "password";
+    // Use a Map to store multiple admin credentials
+    private static final Map<String, String> ADMIN_CREDENTIALS = new HashMap<>();
+
+    static {
+        // Add all your admin users here
+        ADMIN_CREDENTIALS.put("admin", "password");
+        ADMIN_CREDENTIALS.put("admin2", "password2");
+        // Add more users as needed
+    }
 
     @FXML
     public void initialize() {
@@ -53,9 +62,10 @@ public class AdminLoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
+        // Check if the username exists in the map and if the password matches
+        if (ADMIN_CREDENTIALS.containsKey(username) && password.equals(ADMIN_CREDENTIALS.get(username))) {
             // Log a successful login
-            logger.info("Admin has successfully logged in.");
+            logger.info("Admin '" + username + "' has successfully logged in.");
 
             errorMessageLabel.setText("");
             showAlert(Alert.AlertType.INFORMATION, "Login Successful", "Welcome, Administrator!");
